@@ -3,6 +3,23 @@
 <script src="//use.typekit.net/xue8urh.js"></script>
 <script>try{Typekit.load();}catch(e){}</script>
 <style type="text/css">
+	body {
+		background: #fff;
+		font-size: 2em;
+	}
+	.parent {
+	  position: relative;
+	}
+	.child {
+	  position: absolute;
+	  top: 50%;
+	  left: 50%;
+	  transform: translate(-50%, -50%);
+	}
+	h1, p {
+		text-align: center;
+		color: white;
+	}
 	h1 {
 		font-family: "brandon-grotesque",sans-serif;
 		margin-bottom: 0;
@@ -12,9 +29,13 @@
 	}
 </style>
 <body>
-<h1>
-	<abbr title="User Experience">UX</abbr>/<abbr title="User Interface">UI</abbr>
-</h1>
-<p>Designer &amp; Developer (Under Development)</p>
+	<header class="parent">
+		<hgroup class="child">
+			<h1>
+				<abbr title="User Experience">UX</abbr>/<abbr title="User Interface">UI</abbr>
+			</h1>
+			<p>Designer &amp; Developer (Under Development)</p>
+		</hgroup>
+</header>
 </body>
 </html>
