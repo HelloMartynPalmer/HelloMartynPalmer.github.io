@@ -2,7 +2,7 @@
   "name": "The website title",
   "short_name": "TwelveChars",
   "description": "Site description",
-  "start_url": "/?utm_source=homescreen",
+  "start_url": "https://martynpalmer.co.uk",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
