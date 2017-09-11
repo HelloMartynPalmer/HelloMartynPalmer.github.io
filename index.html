@@ -9,7 +9,7 @@
 
         <link rel="manifest" href="manifest.json">
         <meta name="theme-color" content="black" />
-        <link rel="apple-touch-icon" href="/_assets/img/global/icons/touch/apple-touch-icon.png">
+        <link rel="apple-touch-icon" href="_assets/img/global/icons/touch/apple-touch-icon.png">
 
         <!-- Facebook Data -->
         <meta property="og:title" content="">
@@ -31,7 +31,7 @@
         <link rel="preload" href="article-lead-sm.jpg" as="image" type="image/jpeg" media="only screen and (max-width: 32em)">
 
 
-        <link rel="preload" as="style" href="/_assets/css/main.css" media="(min-width: 32em)"> 
+        <link rel="preload" as="style" href="_assets/css/main.css" media="(min-width: 32em)"> 
     </head>
     <body>
         
@@ -44,7 +44,7 @@
         if ('serviceWorker' in navigator) {
 
           navigator.serviceWorker
-            .register('./sw.js', { scope: './' })
+            .register('sw.js', { scope: '' })
             .then(function(registration) {
               console.log("Service Worker Registered");
             })
