@@ -130,6 +130,17 @@
 		"outputPathIsSetByUser": 0,
 		"processed": 0
 		},
+	"\/_assets\/img\/projects\/events\/goodwood.jpg": {
+		"fileType": 16384,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 604099,
+		"inputAbbreviatedPath": "\/_assets\/img\/projects\/events\/goodwood.jpg",
+		"outputAbbreviatedPath": "\/_assets\/img\/projects\/events\/goodwood.jpg",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 1
+		},
 	"\/_assets\/js\/main.js": {
 		"fileType": 64,
 		"ignore": 1,
