@@ -1,8 +1,8 @@
 {
-  "name": "The website title",
-  "short_name": "TwelveChars",
-  "description": "Site description",
-  "start_url": "https://martynpalmer.co.uk",
+  "name": "Martyn Palmer",
+  "short_name": "MP",
+  "description": "Digital Experience",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
