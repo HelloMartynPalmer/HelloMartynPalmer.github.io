@@ -2,7 +2,7 @@
   "name": "Martyn Palmer",
   "short_name": "MP",
   "description": "Digital Experience",
-  "start_url": "/",
+  "start_url": ".",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
