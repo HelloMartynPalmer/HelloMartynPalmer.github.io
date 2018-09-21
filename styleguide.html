@@ -9,39 +9,455 @@
         <link rel="manifest" href="manifest.json">
         <meta name="theme-color" content="black" />
         <link rel="apple-touch-icon" href="_assets/img/global/icons/touch/apple-touch-icon.png">
-        <style>h1,p{display:inline-block}body{background:#f2f2f2;padding:.5em 2em;overflow:hidden}.loader--active #loader{position:fixed;top:0;right:0;width:100%;height:100%;z-index:999;overflow:hidden}.loader--active .loading--layer{right:-35vw;transition:right 1s ease-in-out}.loading--layer{position:absolute;top:0;right:135vw;height:100%;width:170%;-ms-transform:skewX(20deg);-webkit-transform:skewX(20deg);transform:skewX(20deg);transition:right 1s ease-in-out}.loading--layer:nth-child(1){background:#ddd;z-index:1;-webkit-transition-delay:1.5s;-moz-transition-delay:1.5s;-o-transition-delay:1.5s;transition-delay:1.5s}.loading--layer:nth-child(2){background:#ccc;z-index:2;-webkit-transition-delay:1s;-moz-transition-delay:1s;-o-transition-delay:1s;transition-delay:1s}.header,.sub-heading{transition:opacity .7s cubic-bezier(.8,0,.55,.94) 2.5s,transform .7s cubic-bezier(.8,0,.55,.94) 2.5s}.loader--active .header{opacity:0;transform:translate3d(0,-3em,0)}.header{opacity:1;transform:translate3d(0,0,0)}.loader--active .sub-heading{opacity:0;transform:translate3d(0,5em,0)}.sub-heading{opacity:1;transform:translate3d(0,0,0)}h1{color:#222;font-family:proxima-nova,sans-serif;font-weight:600;font-size:1.618em;margin-bottom:0}h2,p{font-family:rooney-web,serif;font-weight:300}h2{font-size:2.8em;color:#222;margin-bottom:.4em}a,p{color:#222;font-size:.8em}p{margin-top:0;text-decoration:line-through}a{font-family:proxima-nova,sans-serif;font-weight:900;text-transform:uppercase;text-decoration:none;margin-left:.2em;position:relative}a:before{content:"";position:absolute;width:100%;height:.15em;bottom:0;left:0;background-color:#000;visibility:hidden;-webkit-transform:scaleX(0);transform:scaleX(0);-webkit-transition:all .3s ease-in-out 0s;transition:all .3s ease-in-out 0s}a:hover:before{visibility:visible;-webkit-transform:scaleX(1);transform:scaleX(1)}.sub-heading{position:absolute;bottom:3em;left:2em}</style>
+        <style>
+            /*! normalize.css v8.0.0 | MIT License | github.com/necolas/normalize.css */
+
+/* Document
+   ========================================================================== */
+
+/**
+ * 1. Correct the line height in all browsers.
+ * 2. Prevent adjustments of font size after orientation changes in iOS.
+ */
+
+html {
+  line-height: 1.15; /* 1 */
+  -webkit-text-size-adjust: 100%; /* 2 */
+}
+
+/* Sections
+   ========================================================================== */
+
+/**
+ * Remove the margin in all browsers.
+ */
+
+body {
+  margin: 0;
+}
+
+/**
+ * Correct the font size and margin on `h1` elements within `section` and
+ * `article` contexts in Chrome, Firefox, and Safari.
+ */
+
+h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+
+/* Grouping content
+   ========================================================================== */
+
+/**
+ * 1. Add the correct box sizing in Firefox.
+ * 2. Show the overflow in Edge and IE.
+ */
+
+hr {
+  box-sizing: content-box; /* 1 */
+  height: 0; /* 1 */
+  overflow: visible; /* 2 */
+}
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+
+pre {
+  font-family: monospace, monospace; /* 1 */
+  font-size: 1em; /* 2 */
+}
+
+/* Text-level semantics
+   ========================================================================== */
+
+/**
+ * Remove the gray background on active links in IE 10.
+ */
+
+a {
+  background-color: transparent;
+}
+
+/**
+ * 1. Remove the bottom border in Chrome 57-
+ * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.
+ */
+
+abbr[title] {
+  border-bottom: none; /* 1 */
+  text-decoration: underline; /* 2 */
+  text-decoration: underline dotted; /* 2 */
+}
+
+/**
+ * Add the correct font weight in Chrome, Edge, and Safari.
+ */
+
+b,
+strong {
+  font-weight: bolder;
+}
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+
+code,
+kbd,
+samp {
+  font-family: monospace, monospace; /* 1 */
+  font-size: 1em; /* 2 */
+}
+
+/**
+ * Add the correct font size in all browsers.
+ */
+
+small {
+  font-size: 80%;
+}
+
+/**
+ * Prevent `sub` and `sup` elements from affecting the line height in
+ * all browsers.
+ */
+
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+
+/* Embedded content
+   ========================================================================== */
+
+/**
+ * Remove the border on images inside links in IE 10.
+ */
+
+img {
+  border-style: none;
+}
+
+/* Forms
+   ========================================================================== */
+
+/**
+ * 1. Change the font styles in all browsers.
+ * 2. Remove the margin in Firefox and Safari.
+ */
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+  line-height: 1.15; /* 1 */
+  margin: 0; /* 2 */
+}
+
+/**
+ * Show the overflow in IE.
+ * 1. Show the overflow in Edge.
+ */
+
+button,
+input { /* 1 */
+  overflow: visible;
+}
+
+/**
+ * Remove the inheritance of text transform in Edge, Firefox, and IE.
+ * 1. Remove the inheritance of text transform in Firefox.
+ */
+
+button,
+select { /* 1 */
+  text-transform: none;
+}
+
+/**
+ * Correct the inability to style clickable types in iOS and Safari.
+ */
+
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  -webkit-appearance: button;
+}
+
+/**
+ * Remove the inner border and padding in Firefox.
+ */
+
+button::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner {
+  border-style: none;
+  padding: 0;
+}
+
+/**
+ * Restore the focus styles unset by the previous rule.
+ */
+
+button:-moz-focusring,
+[type="button"]:-moz-focusring,
+[type="reset"]:-moz-focusring,
+[type="submit"]:-moz-focusring {
+  outline: 1px dotted ButtonText;
+}
+
+/**
+ * Correct the padding in Firefox.
+ */
+
+fieldset {
+  padding: 0.35em 0.75em 0.625em;
+}
+
+/**
+ * 1. Correct the text wrapping in Edge and IE.
+ * 2. Correct the color inheritance from `fieldset` elements in IE.
+ * 3. Remove the padding so developers are not caught out when they zero out
+ *    `fieldset` elements in all browsers.
+ */
+
+legend {
+  box-sizing: border-box; /* 1 */
+  color: inherit; /* 2 */
+  display: table; /* 1 */
+  max-width: 100%; /* 1 */
+  padding: 0; /* 3 */
+  white-space: normal; /* 1 */
+}
+
+/**
+ * Add the correct vertical alignment in Chrome, Firefox, and Opera.
+ */
+
+progress {
+  vertical-align: baseline;
+}
+
+/**
+ * Remove the default vertical scrollbar in IE 10+.
+ */
+
+textarea {
+  overflow: auto;
+}
+
+/**
+ * 1. Add the correct box sizing in IE 10.
+ * 2. Remove the padding in IE 10.
+ */
+
+[type="checkbox"],
+[type="radio"] {
+  box-sizing: border-box; /* 1 */
+  padding: 0; /* 2 */
+}
+
+/**
+ * Correct the cursor style of increment and decrement buttons in Chrome.
+ */
+
+[type="number"]::-webkit-inner-spin-button,
+[type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/**
+ * 1. Correct the odd appearance in Chrome and Safari.
+ * 2. Correct the outline style in Safari.
+ */
+
+[type="search"] {
+  -webkit-appearance: textfield; /* 1 */
+  outline-offset: -2px; /* 2 */
+}
+
+/**
+ * Remove the inner padding in Chrome and Safari on macOS.
+ */
+
+[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/**
+ * 1. Correct the inability to style clickable types in iOS and Safari.
+ * 2. Change font properties to `inherit` in Safari.
+ */
+
+::-webkit-file-upload-button {
+  -webkit-appearance: button; /* 1 */
+  font: inherit; /* 2 */
+}
+
+/* Interactive
+   ========================================================================== */
+
+/*
+ * Add the correct display in Edge, IE 10+, and Firefox.
+ */
+
+details {
+  display: block;
+}
+
+/*
+ * Add the correct display in all browsers.
+ */
+
+summary {
+  display: list-item;
+}
+
+/* Misc
+   ========================================================================== */
+
+/**
+ * Add the correct display in IE 10+.
+ */
+
+template {
+  display: none;
+}
+
+/**
+ * Add the correct display in IE 10.
+ */
+
+[hidden] {
+  display: none;
+}
+        </style>
+
+
+        <style>body, html, article{ height: 100%;} body{background:#f2f2f2;} .copy{padding:.5em 3em;}</style>
 
 
         <style>
+
+
+
+            header { position: absolute; z-index: 2;  width: 35%; padding: 3em; bottom: 4em; }    
+            header h1 { margin: 0; text-transform: uppercase; }
+            header p { margin-bottom: 1.4em; }
+            figure {margin: 0;}
+            figure.lead { position: relative; height: 100%; width: 100%; overflow: hidden; padding-bottom: 2em;}
+            figure.lead img {position: absolute; top: 0; left: 0;}
+            figure.lead figcaption { position: absolute; bottom: 6em; left: 6em; width: 30%;}
+
+            img {width: 100%; max-width: auto;}
+            h1 {margin-top: .85; margin-bottom: 0;}
+            h2, h3, h4, h5, h6, p { margin-top: 1.618em; margin-bottom: 0;}
+            h1, h2, h3, h4, h5, h6, dt, dd { color:#222; font-family:proxima-nova,sans-serif; font-weight:600; }
+            p {color: #222;}
+            dl { margin: 3.618em 0 1.618em; background: #222; padding: 3em; }
+            dd {margin-left: 0; color: #f2f2f2;}
             article h1 { font-size: 3.25em; }
             article h2 { font-size: 2.5em; }
             article h3 { font-size: 2em; }
             article h4 { font-size: 1.618em; }
             article h5 { font-size: 1.4em; }
             article h6 { font-size: 1.2em; }
-            article p { font-size: 1em; }
-            article p.introduction { font-size: 1.4em; line-height: 1.5;}
+            article p { font-size: 1em; font-family: georgia; line-height: 1.9; }
+            article p.introduction, dt { font-family:proxima-nova,sans-serif; font-weight:600; font-size: 1.4em; line-height: 1.5; color: #e0bd00;}
+            dt {font-size: 2.5em; line-height: 0.9;}
+            small, figure.lead figcaption { font-size: 0.6em; font-family:proxima-nova,sans-serif;  }
+            header p { font-family:proxima-nova,sans-serif; font-size: 0.8em; font-size: 1.15vw; margin-top: 0;}
+            strong {font-weight:600; }
+            
+            header h1 { font-size: 4em; font-size: 5.7vw;}
+
+            figure.lead { 
+                background-image: 
+                url('_assets/img/projects/events/goodwood-body.png'),
+                url('_assets/img/projects/events/goodwood-yell.svg'),
+                url('_assets/img/projects/events/goodwood-bg.jpg'); 
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position: center top, 10% top, center top;
+            }
+            .initial { color: #222; position: absolute; top: 1em; left: 1.5em; z-index: 33; font-size: 1.8em; font-family:proxima-nova,sans-serif; font-weight: 600 }
+            
+            a.initial, abbr, abbr[title] { text-decoration: none; }
+
+
+            article .copy--intro  {        
+              position: relative;
+              z-index: 5;
+              margin-top: -1.618em;
+              background: #fff;
+              padding-bottom: 3em;
+            }
+            .copy {
+              max-width: 700px;
+              background-color: #fff;
+              margin-left: 10%;
+            }
+
         </style>
         <script src="https://use.typekit.net/kuo1iqy.js"></script>
         <script>try{Typekit.load({ async: true });}catch(e){}</script>
     </head>
-    <body class="loader--active">
-        <div id="loader">
-            <div class="loading--layer"></div>
-            <div class="loading--layer"></div>
-        </div>
-        <header class="header">
-            <h1>p.</h1>
-            <p>porfolio coming soon</p>
+    <body>
+        <!-- Content Styles -->
+
+        <a class="initial" href="/"><abbr class="inital" title="Martyn Palmer">p.</abbr></a>
+
+        <article role="article">
+        
+        <header role="header">
+            <p><strong>Role:</strong> Production manager</p>
+            <h1>Event Coverage</h1>
         </header>
 
-        <!-- Content Styles -->
-        <article>
+            <figure class="lead">
+                <!--img src="_assets/img/projects/events/goodwood-yellow.jpg" alt="Triumph Bonneville Street Scrambler Motorcycle on dark coal terrain"-->
+                <figcaption><strong>Location:</strong> Goodwood Fesitval of Speed / <strong>Photo:</strong> Mihail Jesrevno</figcaption>
+            </figure>
+
+
+            
+        <div class="copy copy--intro ">
             <h1>Triumph Motorcycles - Content creation and digital strategy</h1>
+            
             <p class="introduction">Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
-            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+            <p>Lorem <em>Ipsum</em> is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
             <h2>Neque porro quisquam est qui dolorem</h2>
             <p>If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet.</p>
+        </div>
+        <dl>
+            <dt>80%</dt>
+            <dd>increase in traffic</dd>
+            <dt>900K+</dt>
+            <dd>views</dd>
+            <dt>400%</dt>
+            <dd>driving awareness</dd>
+        </dl>
+        <div class="copy">
             <h3>Nullam lacinia diam</h3>
             <p>Nullam fringilla iaculis mattis. Aenean nec massa nunc. Fusce sodales enim quis felis vehicula porta. Pellentesque sagittis ultrices eros, sed ullamcorper dui faucibus nec. Fusce vel lacus a odio tristique feugiat et vel felis. Aenean ornare ligula blandit nisl mollis sollicitudin. Aliquam ligula lorem, feugiat eu dolor nec, bibendum finibus lorem. Donec faucibus tincidunt ante vitae finibus. Nulla sollicitudin varius sollicitudin. Curabitur sit amet faucibus erat. In sagittis risus nec ipsum vestibulum, non laoreet mauris interdum.</p>
             <p>In laoreet nisl sed odio congue sodales. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec fermentum luctus urna sed pellentesque.</p>
@@ -52,16 +468,7 @@
             <p>In laoreet nisl sed odio congue sodales. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec fermentum luctus urna sed pellentesque.</p>
             <h6>Little title</h6>
             <p>Neque porro quisquam est qui dolorem</p>
-        </article>
-
-        <div class="sub-heading">
-         
-            <a target="_blank" href="https://the-dots.com/users/martyn-palmer-75251">View work</a>
         </div>
-        <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-        <script src="_assets/js/main.js"></script>
-        <script>
-            console.log('hellllooooooo - working hard on it.');
-        </script>
+        </article>
     </body>
 </html>
