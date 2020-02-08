@@ -1,15 +1,506 @@
-<!doctype html>
-<html class="no-js" lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>Martyn Palmer - Campaign Strategy and Digital Experience </title>
-        <meta name="description" content="Campaign Strategy and Digital Experience, EExperience design and digital producution">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="apple-touch-icon" href="_assets/img/global/icons/touch/apple-touch-icon.png">
-        <style></style>
-    </head>
-    <body>
-        <p>Updating</p>
-    </body>
-</html>
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <title>noisy-water</title>
+  <style>
+    body, html{
+      padding: 0;
+      margin: 0;
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      overscroll-behaviour: none;
+    }
+    canvas{
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+    }
+  </style>
+</head>
+<body>
+
+  <script id="play0VertexShader" type="x-shader/x-vertex">
+    varying vec3 worldNormal;
+    varying vec3 viewDirection;
+
+    void main() {
+        vec4 worldPosition = modelMatrix * vec4( position, 1.0);
+        worldNormal = normalize( modelViewMatrix * vec4(normal, 0.)).xyz;
+        viewDirection = normalize(worldPosition.xyz - cameraPosition);;
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  </script>
+  <script id="play0FragmentShader" type="x-shader/x-fragment">
+
+    vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
+    vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
+
+    float simplex3d(vec3 v){
+      const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
+      const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
+
+    // First corner
+      vec3 i  = floor(v + dot(v, C.yyy) );
+      vec3 x0 =   v - i + dot(i, C.xxx) ;
+
+    // Other corners
+      vec3 g = step(x0.yzx, x0.xyz);
+      vec3 l = 1.0 - g;
+      vec3 i1 = min( g.xyz, l.zxy );
+      vec3 i2 = max( g.xyz, l.zxy );
+
+      //  x0 = x0 - 0. + 0.0 * C
+      vec3 x1 = x0 - i1 + 1.0 * C.xxx;
+      vec3 x2 = x0 - i2 + 2.0 * C.xxx;
+      vec3 x3 = x0 - 1. + 3.0 * C.xxx;
+
+    // Permutations
+      i = mod(i, 289.0 );
+      vec4 p = permute( permute( permute(
+                 i.z + vec4(0.0, i1.z, i2.z, 1.0 ))
+               + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))
+               + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
+
+    // Gradients
+    // ( N*N points uniformly over a square, mapped onto an octahedron.)
+      float n_ = 1.0/7.0; // N=7
+      vec3  ns = n_ * D.wyz - D.xzx;
+
+      vec4 j = p - 49.0 * floor(p * ns.z *ns.z);  //  mod(p,N*N)
+
+      vec4 x_ = floor(j * ns.z);
+      vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)
+
+      vec4 x = x_ *ns.x + ns.yyyy;
+      vec4 y = y_ *ns.x + ns.yyyy;
+      vec4 h = 1.0 - abs(x) - abs(y);
+
+      vec4 b0 = vec4( x.xy, y.xy );
+      vec4 b1 = vec4( x.zw, y.zw );
+
+      vec4 s0 = floor(b0)*2.0 + 1.0;
+      vec4 s1 = floor(b1)*2.0 + 1.0;
+      vec4 sh = -step(h, vec4(0.0));
+
+      vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;
+      vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
+
+      vec3 p0 = vec3(a0.xy,h.x);
+      vec3 p1 = vec3(a0.zw,h.y);
+      vec3 p2 = vec3(a1.xy,h.z);
+      vec3 p3 = vec3(a1.zw,h.w);
+
+    //Normalise gradients
+      vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+      p0 *= norm.x;
+      p1 *= norm.y;
+      p2 *= norm.z;
+      p3 *= norm.w;
+
+    // Mix final noise value
+      vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+      m = m * m;
+      return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),
+                                    dot(p2,x2), dot(p3,x3) ) );
+    }
+
+    float fbm3 (in vec3 st) {
+        // Initial values
+        float value = 0.0;
+        float amplitude = 0.8;
+        //
+        // Loop of octaves
+        for (int i = 0; i < 5; i++) {
+            value += amplitude * simplex3d(st);
+            st *= 1.8;
+            amplitude *= 0.8;
+        }
+        return value;
+    }
+
+    vec2 radialDistortion(vec2 coord) {
+      vec2 cc = coord - vec2(0.5);
+      float dist = dot(cc, cc) * 0.2;
+      return coord + cc * (1.0 - dist) * dist;
+    }
+
+    uniform sampler2D envMap;
+    uniform vec2 resolution;
+    uniform vec2 mouse;
+    uniform float time;
+
+    varying vec3 worldNormal;
+    varying vec3 viewDirection;
+
+    void main() {
+
+      vec2 uv = gl_FragCoord.xy / resolution;
+      float aspect = resolution.y/resolution.x;
+
+      //uv = radialDistortion(uv);
+
+      vec2 suv = uv;
+      suv.y = (suv.y - 0.5) * aspect + 0.5;
+
+      vec2 muv = suv + mouse*0.1 + 0.5;
+
+      float md = distance(mouse + 0.5, suv);
+      float mp = pow( max(0.0, md - 0.1), 0.3);
+
+
+      float dx = 0.0;
+      float dy = 0.0;
+      float to = 0.0;
+      float prog = 0.0;
+
+
+      float speed = 3000.0;
+      float ts = time/speed + 240.0;
+      float nx = simplex3d(vec3(suv.x * 2.0 + 100.0, suv.y * 2.0 + 100.0, ts * 0.1));
+      float sense = 4.0  + mp * 10.0;
+
+
+
+
+
+      vec4 col1 = vec4(abs(sin(ts*1.4)), abs(sin(ts*1.5)), abs(sin(ts*1.6)), 1.0);
+      vec4 col2 = vec4(1.0 - col1.rgb, 1.0);
+
+      vec2 nuv = vec2(0.0);
+
+      vec4 result = vec4(0.0);
+      vec4 tc = vec4(0.0);
+
+      for(float i = 1.0; i <= 5.0; ++i) {
+          to = i * 0.01;
+          prog = i/5.0;
+          //dx = simplex3d(vec3(suv.x * sense, suv.y * sense, ts - to));
+          dx = simplex3d(vec3(suv.x * sense + 100.0, suv.y * sense + 100.0, ts - to));
+
+          nuv = (uv + 0.5) * (vec2(dx,0.0)*0.05 + 1.01) + prog * 0.01 *muv - 0.5;
+          tc = texture2D(envMap, nuv);
+          result += mix(col1 * tc, col2 * tc, prog) * prog;
+      }
+
+      result /= 2.0;
+
+      vec4 intensity;
+      if(fract(gl_FragCoord.y * 0.5) > 0.5) {
+        intensity = vec4(0);
+      } else {
+        intensity = smoothstep(0.1, 0.2, result) + normalize(result);
+      }
+      result = intensity * -0.25 + result * 1.4;
+
+        gl_FragColor = result;
+    }
+
+    // void main() {
+    //   vec2 texCoord = vec2(gl_TexCoord[0]);
+    //   vec4 rgba = texture2D(source, radialDistortion(texCoord));
+    //   vec4 intensity;
+    //   if(fract(gl_FragCoord.y * (0.5 * 4.0 / 3.0)) > 0.5) {
+    //     intensity = vec4(0);
+    //   } else {
+    //     intensity = smoothstep(0.2, 0.8, rgba) + normalize(rgba);
+    //   }
+    //   gl_FragColor = intensity * -0.25 + rgba * 1.4;
+    // }
+
+  </script>
+
+  <script id="playVertexShader" type="x-shader/x-vertex">
+    varying vec3 worldNormal;
+    varying vec3 viewDirection;
+
+    void main() {
+        vec4 worldPosition = modelMatrix * vec4( position, 1.0);
+        worldNormal = normalize( modelViewMatrix * vec4(normal, 0.)).xyz;
+        viewDirection = normalize(worldPosition.xyz - cameraPosition);;
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  </script>
+  <script id="playFragmentShader" type="x-shader/x-fragment">
+
+    // Simplex 2D noise
+    //
+    // vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+    //
+    // float simplex2d(vec2 v){
+    //   const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+    //            -0.577350269189626, 0.024390243902439);
+    //   vec2 i  = floor(v + dot(v, C.yy) );
+    //   vec2 x0 = v -   i + dot(i, C.xx);
+    //   vec2 i1;
+    //   i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+    //   vec4 x12 = x0.xyxy + C.xxzz;
+    //   x12.xy -= i1;
+    //   i = mod(i, 289.0);
+    //   vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
+    //   + i.x + vec3(0.0, i1.x, 1.0 ));
+    //   vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy),
+    //     dot(x12.zw,x12.zw)), 0.0);
+    //   m = m*m ;
+    //   m = m*m ;
+    //   vec3 x = 2.0 * fract(p * C.www) - 1.0;
+    //   vec3 h = abs(x) - 0.5;
+    //   vec3 ox = floor(x + 0.5);
+    //   vec3 a0 = x - ox;
+    //   m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+    //   vec3 g;
+    //   g.x  = a0.x  * x0.x  + h.x  * x0.y;
+    //   g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+    //   return 130.0 * dot(m, g);
+    // }
+    //
+    // #define OCTAVES 4
+    //
+    // float fbm (in vec2 st, float value, float amplitude, float frequency) {
+    //     // Loop of octaves
+    //     for (int i = 0; i < OCTAVES; i++) {
+    //         value += amplitude * simplex2d(st);
+    //         st *= 1.0/frequency;
+    //         amplitude *= frequency;
+    //     }
+    //     return value;
+    // }
+
+    vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
+    vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
+
+    float simplex3d(vec3 v){
+      const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
+      const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
+
+    // First corner
+      vec3 i  = floor(v + dot(v, C.yyy) );
+      vec3 x0 =   v - i + dot(i, C.xxx) ;
+
+    // Other corners
+      vec3 g = step(x0.yzx, x0.xyz);
+      vec3 l = 1.0 - g;
+      vec3 i1 = min( g.xyz, l.zxy );
+      vec3 i2 = max( g.xyz, l.zxy );
+
+      //  x0 = x0 - 0. + 0.0 * C
+      vec3 x1 = x0 - i1 + 1.0 * C.xxx;
+      vec3 x2 = x0 - i2 + 2.0 * C.xxx;
+      vec3 x3 = x0 - 1. + 3.0 * C.xxx;
+
+    // Permutations
+      i = mod(i, 289.0 );
+      vec4 p = permute( permute( permute(
+                 i.z + vec4(0.0, i1.z, i2.z, 1.0 ))
+               + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))
+               + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
+
+    // Gradients
+    // ( N*N points uniformly over a square, mapped onto an octahedron.)
+      float n_ = 1.0/7.0; // N=7
+      vec3  ns = n_ * D.wyz - D.xzx;
+
+      vec4 j = p - 49.0 * floor(p * ns.z *ns.z);  //  mod(p,N*N)
+
+      vec4 x_ = floor(j * ns.z);
+      vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)
+
+      vec4 x = x_ *ns.x + ns.yyyy;
+      vec4 y = y_ *ns.x + ns.yyyy;
+      vec4 h = 1.0 - abs(x) - abs(y);
+
+      vec4 b0 = vec4( x.xy, y.xy );
+      vec4 b1 = vec4( x.zw, y.zw );
+
+      vec4 s0 = floor(b0)*2.0 + 1.0;
+      vec4 s1 = floor(b1)*2.0 + 1.0;
+      vec4 sh = -step(h, vec4(0.0));
+
+      vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;
+      vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
+
+      vec3 p0 = vec3(a0.xy,h.x);
+      vec3 p1 = vec3(a0.zw,h.y);
+      vec3 p2 = vec3(a1.xy,h.z);
+      vec3 p3 = vec3(a1.zw,h.w);
+
+    //Normalise gradients
+      vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+      p0 *= norm.x;
+      p1 *= norm.y;
+      p2 *= norm.z;
+      p3 *= norm.w;
+
+    // Mix final noise value
+      vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+      m = m * m;
+      return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),
+                                    dot(p2,x2), dot(p3,x3) ) );
+    }
+
+    float fbm3 (in vec3 st, float value, float amplitude, float frequency) {
+        // Loop of octaves
+        for (int i = 0; i < 5; i++) {
+            value += amplitude * simplex3d(st);
+            st *= 1.0 / frequency;
+            amplitude *= frequency;;
+        }
+        return value;
+    }
+
+
+    uniform sampler2D envMap;
+    uniform vec2 resolution;
+    uniform vec2 mouse;
+    uniform float time;
+    uniform float color;
+
+    varying vec3 worldNormal;
+    varying vec3 viewDirection;
+
+    void main() {
+
+      vec2 uv = gl_FragCoord.xy / resolution;
+      float aspect = resolution.x/resolution.y;
+      vec2 ms = (mouse + 0.5) * 0.2;
+
+      vec2 suv = uv;
+      suv.y = (suv.y - 0.5) * aspect + 0.5;
+      suv -= 1.5;
+
+      float sense = 2.3;
+      float value = mouse.y;
+      float amp = 0.25 + mouse.x/2.0;
+      float freq = 1.07;
+
+      float speed = 9000.0;
+      float ts = time/speed + 0.0;
+      float dx = 0.0;
+      float dy = 0.0;
+      vec2 cuv = suv;
+      vec2 auv = suv;
+      vec2 dm = vec2(0.0);
+
+      for (float i = 1.0; i <= 3.0; i++ ){
+        dx = fbm3(vec3(cuv.x * sense, cuv.y * sense, ts), value, amp, freq);
+        dy = fbm3(vec3(cuv.x * sense + 1000.0, cuv.y * sense + 1000.0, ts + 1000.0), value, amp, freq);
+        cuv *= 1.0 + vec2(dx, dy) * 0.8;
+        auv *= 1.0 + vec2(dx, dy) * 0.02;
+        dm += vec2(dx, dy) * 0.02;
+      }
+
+      cuv += 1.5;
+      auv += 1.5;
+
+
+      vec4 tex = texture2D(envMap, auv);
+      float nse = simplex3d(vec3(uv.x * 2000.0, uv.y * 2000.0, time/500.0));
+
+      //ts = color;
+      //ts = 643.0409274445965;
+      //ts = 873.8778373223763;
+
+      vec3 col1 = vec3(sin(ts*1.3), sin(ts*1.06), sin(ts*1.19));
+      //vec3 col2 = vec3(sin(ts*0.96), sin(ts*0.51), sin(ts*1.87));
+      vec3 col2 = 1.0 - col1;
+
+      vec4 col = tex*0.8 - length(auv-uv) + (0.0 + dm.x*dm.y*1000.0) - nse*0.2;
+
+        gl_FragColor = vec4( mix(col1, col2, col.r) + col2*0.1, 1.0) * (1.0 + nse*0.1) ;
+      //gl_FragColor = vec4( col.rgb + col2*0.1 , 1.0) * (1.0 + nse*0.1);
+    }
+
+  </script>
+
+  <script id="backfaceVertexShader" type="x-shader/x-vertex">
+    varying vec3 worldNormal;
+
+    void main() {
+      worldNormal = normalize( modelViewMatrix * vec4(normal, 0.)).xyz;
+
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  </script>
+  <script id="backfaceFragmentShader" type="x-shader/x-fragment">
+    varying vec3 worldNormal;
+
+    void main() {
+        gl_FragColor = vec4(worldNormal, 1.0);
+    }
+  </script>
+  <script id="refractionVertexShader" type="x-shader/x-vertex">
+    varying vec3 worldNormal;
+    varying vec3 viewDirection;
+
+    void main() {
+        vec4 worldPosition = modelMatrix * vec4( position, 1.0);
+        worldNormal = normalize( modelViewMatrix * vec4(normal, 0.)).xyz;
+        viewDirection = normalize(worldPosition.xyz - cameraPosition);;
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  </script>
+  <script id="refractionFragmentShader" type="x-shader/x-fragment">
+    uniform sampler2D envMap;
+    uniform sampler2D backfaceMap;
+    uniform vec2 resolution;
+
+    varying vec3 worldNormal;
+    varying vec3 viewDirection;
+
+    float ior = 1.1;
+    float a = 0.33;
+
+    vec3 fogColor = vec3(0.0, 1.0, 0.0);
+    vec3 reflectionColor = vec3(1.0, 1.0, 1.0);
+
+    float fresnelFunc(vec3 viewDirection, vec3 worldNormal) {
+        return pow( 1.0 + dot( viewDirection, worldNormal), 3.0 );
+    }
+
+    void main() {
+        // screen coordinates
+        vec2 uv = gl_FragCoord.xy / resolution;
+
+        // sample backface data from texture
+        vec3 backfaceNormal = texture2D(backfaceMap, uv).rgb;
+
+        // combine backface and frontface normal
+        vec3 normal = worldNormal * (1.0 - a) - backfaceNormal * a;
+
+        // calculate refraction and apply to uv
+        vec3 refracted = refract(viewDirection, normal, 1.0/ior);
+      uv += refracted.xy;
+
+        // sample environment texture
+        //vec4 tex = texture2D(envMap, uv);
+      vec2 off = refracted.xy * 0.02;
+
+      float r = texture2D(envMap, uv + off*1.0).r + off.x;
+      float g = texture2D(envMap, uv + off*0.5).g - off.x;
+      float b = texture2D(envMap, uv + off*0.0).b + off.y;
+
+      vec4 tex = vec4(r, g, b, 1.0);
+
+        // calculate fresnel
+        float fresnel = fresnelFunc(viewDirection, normal);
+
+        vec4 color = tex;
+
+        // apply fresnel
+        color.rgb = mix(color.rgb, reflectionColor, fresnel);
+
+        gl_FragColor = vec4(color.rgb, 1.0);
+    }
+
+  </script>
+
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.js" integrity="sha256-+5R1zw/Tcxp82QhhfAJlicTeM4LCzFxp6EvsZW3V9bE=" crossorigin="anonymous"></script>
+  <script src="bundle.js"></script>
+
+
+<canvas width="1440" height="753" style="width: 1440px; height: 753px;"></canvas></body></html>
