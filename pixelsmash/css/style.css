@@ -226,17 +226,17 @@ textarea {
   body {
     font-size: 50%;
   }
-  p {
-    font-size: 1.3em;
-    line-height: 1.8;
-    letter-spacing: 0.05em;
-  }
 }
 
 @media only screen and (min-width: 37.5em) {
   /* Style adjustments for viewports that meet the condition */
   body {
     font-size: 62.5%;
+  }
+  p {
+    font-size: 1.3em;
+    line-height: 1.8;
+    letter-spacing: 0.05em;
   }
 }
 
