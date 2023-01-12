@@ -1,0 +1,51 @@
+-# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.json
+*.lock
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.parcel-cache
+ehthumbs.db
+Thumbs.db
+
+
+node_modules
+dist
+.parcel-cache/00cdd157ba2aa58e
+.parcel-cache/3dcdc4955bf9973b
+.parcel-cache/551feca156eba1be
+.parcel-cache/9a64c568b2dfc255
+.parcel-cache/c515a02e28e10b32.txt
+.parcel-cache/data.mdb
+.parcel-cache/lock.mdb
